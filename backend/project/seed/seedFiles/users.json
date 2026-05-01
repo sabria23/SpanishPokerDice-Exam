@@ -1,0 +1,137 @@
+[
+  {
+    "username": "admin_alice",
+    "pwd": "password12345",
+    "email": "alice@example.com",
+    "age": 28,
+    "role": "admin",
+    "eloRating": 1200,
+    "eloRatingLastWeek": 1150
+  },
+  {
+    "username": "admin_bob",
+    "pwd": "password123",
+    "email": "bob@example.com",
+    "age": 35,
+    "role": "admin",
+    "eloRating": 1180,
+    "eloRatingLastWeek": 1200
+  },
+  {
+    "username": "carol_poker",
+    "pwd": "321pwd123",
+    "email": "carol@example.com",
+    "age": 31,
+    "role": "user",
+    "eloRating": 1120,
+    "eloRatingLastWeek": 1080
+  },
+  {
+    "username": "dave_rolls",
+    "pwd": "dave3030",
+    "email": "dave@example.com",
+    "age": 22,
+    "role": "user",
+    "eloRating": 1000,
+    "eloRatingLastWeek": 1000
+  },
+  {
+    "username": "eve_straights",
+    "pwd": "123ilovemycat",
+    "email": "eve@example.com",
+    "age": 19,
+    "role": "user",
+    "eloRating": 1100,
+    "eloRatingLastWeek": 1080
+  },
+  {
+    "username": "frank_bluff",
+    "pwd": "frankisthebest",
+    "email": "frank@example.com",
+    "age": 26,
+    "role": "user",
+    "eloRating": 950,
+    "eloRatingLastWeek": 970
+  },
+  {
+    "username": "grace_dice",
+    "pwd": "dicegames2020",
+    "email": "grace@example.com",
+    "age": 24,
+    "role": "user",
+    "eloRating": 1050,
+    "eloRatingLastWeek": 1020
+  },
+  {
+    "username": "henry_fives",
+    "pwd": "hello12345",
+    "email": "henry@example.com",
+    "age": 30,
+    "role": "user",
+    "eloRating": 890,
+    "eloRatingLastWeek": 910
+  },
+  {
+    "username": "isla_royal",
+    "pwd": "lkaskndowend",
+    "email": "isla@example.com",
+    "age": 21,
+    "role": "user",
+    "eloRating": 1300,
+    "eloRatingLastWeek": 1250
+  },
+  {
+    "username": "jack_sevens",
+    "pwd": "smofnalnkg",
+    "email": "jack@example.com",
+    "age": 33,
+    "role": "user",
+    "eloRating": 760,
+    "eloRatingLastWeek": 800
+  },
+  {
+    "username": "karen_flush",
+    "pwd": "aGoodPassword",
+    "email": "karen@example.com",
+    "age": 27,
+    "role": "user",
+    "eloRating": 1010,
+    "eloRatingLastWeek": 990
+  },
+  {
+    "username": "leo_wildcard",
+    "pwd": "runningout",
+    "email": "leo@example.com",
+    "age": 20,
+    "role": "user",
+    "eloRating": 1150,
+    "eloRatingLastWeek": 1100
+  },
+  {
+    "username": "mia_doubles",
+    "pwd": "thirdlast",
+    "email": "mia@example.com",
+    "age": 23,
+    "role": "user",
+    "eloRating": 1080,
+    "eloRatingLastWeek": 1060
+  },
+  {
+    "username": "nick_fullhouse",
+    "pwd": "doesithavetoincludenumbers33",
+    "email": "nick@example.com",
+    "age": 29,
+    "role": "user",
+    "eloRating": 920,
+    "eloRatingLastWeek": 950
+  },
+  {
+    "username": "olivia_trips",
+    "pwd": "olivialovesolives",
+    "email": "olivia@example.com",
+    "age": 25,
+    "role": "user",
+    "eloRating": 1230,
+    "eloRatingLastWeek": 1190
+  }
+]

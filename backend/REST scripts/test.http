@@ -1,0 +1,498 @@
+# Scripts
+# Run these in order because some of the requests depend on data created by previous ones
+
+@baseUrl = http://localhost:9000/api
+
+# NOTE: If you run npm run seed, all IDs will change and these variables must be updated
+# Admin: admin_alice
+@adminUserId = 2066486461092732
+# Replace with admin userId from db
+
+# Regular user: frank_bluff
+@regularUserId = 7575183418173531
+# Replace with regular userId from db
+
+# Regular user who'll be banned: jack_sevems
+@banTargetUserId = 2097675848578728
+
+# Variant: 5 rounds, straights allowed, 7 sec (used for matchmaking)
+@variantId = 69d01d1107ea03bd03b5100b
+
+# A finished game
+@finishedGameId = 5323129790185207
+
+# An ongoing game
+@ongoingGameId = 5089816101071327
+
+# Upcoming tournament
+@upcomingTournamentId = 1919964862932144
+
+# Ongoing tournament
+@ongoingTournamentId = 669767509904436
+
+# Finished tournament
+@finishedTournamentId = 6286477260844307
+
+# A comment ID for delete test
+@commentId = 69d01d1107ea03bd03b5106d
+
+
+#-----------------------------------------------------------------------#
+# USERS
+#-----------------------------------------------------------------------#
+
+### Register a new user 
+# Trying to make it less of a pain
+# @name register
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+    "username": "testuser2",
+    "email": "testuser2@example.com",
+    "pwd": "password123",
+    "age": 25
+}
+
+
+### Register with invalid age, should fail with 400 because the user is under 18
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+    "username": "tooyoung",
+    "email": "tooyoung@example.com",
+    "pwd": "password123",
+    "age": 16
+}
+
+
+### Register with duplicate username, should fail with 409 conflict
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+{
+    "username": "frank_bluff",
+    "email": "duplicate@example.com",
+    "pwd": "password123",
+    "age": 25
+}
+
+
+### Login as a regular user
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "frank@example.com",
+    "pwd": "frankisthebest"
+}
+
+
+### Login as admin
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "alice@example.com",
+    "pwd": "password12345"
+}
+
+
+### Login with wrong password, should fail with 401
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+    "email": "alice@example.com",
+    "pwd": "wrongpassword"
+}
+
+
+### Get a user profile (registered users only)
+GET {{baseUrl}}/users/{{regularUserId}}
+x-user-id: {{regularUserId}}
+
+
+### Get a user profile as anonymous, should fail with 401
+GET {{baseUrl}}/users/{{regularUserId}}
+
+
+### Update own profile (registered users only)
+PUT {{baseUrl}}/users/{{regularUserId}}
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "email": "franknew@example.com",
+    "age": 27
+}
+
+
+### Try to update another user's profile, should fail with 403
+PUT {{baseUrl}}/users/{{adminUserId}}
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "email": "hacked@example.com"
+}
+
+
+### Get all users (admin only)
+GET {{baseUrl}}/users
+x-user-id: {{adminUserId}}
+
+
+### Get all users with search and pagination (admin only), username contains alice
+GET {{baseUrl}}/users?search=alice&page=1&limit=5
+x-user-id: {{adminUserId}}
+
+
+### Get all users as regular user, should fail with 403
+GET {{baseUrl}}/users
+x-user-id: {{regularUserId}}
+
+
+### Ban a user (admin only)
+PUT {{baseUrl}}/users/{{banTargetUserId}}/ban
+x-user-id: {{adminUserId}}
+
+
+### Try to ban an admin (should fail with 403)
+PUT {{baseUrl}}/users/{{adminUserId}}/ban
+x-user-id: {{adminUserId}}
+
+
+#-----------------------------------------------------------------------#
+# GAME VARIANTS
+#-----------------------------------------------------------------------#
+
+### Get all game variants (public)
+GET {{baseUrl}}/variants
+
+
+### Get variants filtered by rounds
+GET {{baseUrl}}/variants?rounds=5
+
+
+### Get variants filtered by multiple fields
+GET {{baseUrl}}/variants?rounds=5&straightsAllowed=true
+
+
+#-----------------------------------------------------------------------#
+# GAMES
+#-----------------------------------------------------------------------#
+
+### Get all games (public, registered users only)
+GET {{baseUrl}}/games
+
+
+### Get all games filtered by status
+GET {{baseUrl}}/games?status=ongoing
+
+
+### Get all finished games sorted by most recent
+GET {{baseUrl}}/games?status=finished&sort=finishedAt&order=desc
+
+
+### Get all games filtered by variant
+GET {{baseUrl}}/games?variantId={{variantId}}
+
+
+### Get a specific game by id (public)
+GET {{baseUrl}}/games/{{finishedGameId}}
+
+
+### Invite a user to a game (registered users only)
+# @name invite
+POST {{baseUrl}}/games/invite
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "variantId": "{{variantId}}",
+    "invitedUserId": 4893529508819383
+}
+
+
+### Accept a game invite (invited user only)
+# Have to send the invite, then plop in the gameId
+POST {{baseUrl}}/games/8868857335145831/accept
+x-user-id: 4893529508819383
+
+
+### Decline a game invite (invited user only)
+# First send the invite request again, then use the new gameId here
+POST {{baseUrl}}/games/828933734222774/decline
+x-user-id: 4893529508819383
+
+
+### Matchmake as a registered user
+POST {{baseUrl}}/games/matchmake
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "variantId": "{{variantId}}"
+}
+
+
+### Matchmake as an anonymous user (no x-user-id header)
+POST {{baseUrl}}/games/matchmake
+Content-Type: application/json
+
+{
+    "variantId": "{{variantId}}"
+}
+
+
+### Matchmake with invalid variantId, should fail with 400
+POST {{baseUrl}}/games/matchmake
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "variantId": "notavalidid"
+}
+
+
+### Submit game result (registered users only)
+PUT {{baseUrl}}/games/{{ongoingGameId}}/result
+Content-Type: application/json
+x-user-id: 4893529508819383
+# This is not frank
+# userId has to come from an ongoing game 
+# which you can get from the response of "Get all games filtered by status"
+
+{
+    "playerOneScore": 3,
+    "playerTwoScore": 1
+}
+
+
+### Submit result with negative score, should fail validation with 400
+PUT {{baseUrl}}/games/{{ongoingGameId}}/result
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "playerOneScore": -1,
+    "playerTwoScore": 1
+}
+
+
+#-----------------------------------------------------------------------#
+# TOURNAMENTS
+#-----------------------------------------------------------------------#
+
+### Get all tournaments (public)
+GET {{baseUrl}}/tournaments
+
+
+### Get all upcoming tournaments
+GET {{baseUrl}}/tournaments?status=upcoming
+
+
+### Get all ongoing tournaments
+GET {{baseUrl}}/tournaments?status=ongoing
+
+
+### Get all finished tournaments
+GET {{baseUrl}}/tournaments?status=finished
+
+
+### Get all tournaments with pagination
+GET {{baseUrl}}/tournaments?page=1&limit=2
+
+
+### Get a specific upcoming tournament (public)
+GET {{baseUrl}}/tournaments/{{upcomingTournamentId}}
+
+
+### Get a specific finished tournament (public)
+GET {{baseUrl}}/tournaments/{{finishedTournamentId}}
+
+
+### Get tournament standings (public)
+GET {{baseUrl}}/tournaments/{{ongoingTournamentId}}/standings
+
+
+### Create a tournament (admin only)
+POST {{baseUrl}}/tournaments
+Content-Type: application/json
+x-user-id: {{adminUserId}}
+
+{
+    "title": "Autumn Break Championship 2026",
+    "description": "The biggest tournament of the autumn!",
+    "variantId": "{{variantId}}",
+    "maxPlayers": 8,
+    "breakDuration": 10,
+    "scheduledAt": "2026-10-01T12:00:00Z",
+    "trophyTitle": "Autumn Cup"
+}
+
+
+### Create a tournament with past date, should fail with 400
+POST {{baseUrl}}/tournaments
+Content-Type: application/json
+x-user-id: {{adminUserId}}
+
+{
+    "title": "Past Tournament",
+    "variantId": "{{variantId}}",
+    "maxPlayers": 8,
+    "scheduledAt": "2020-01-01T12:00:00Z",
+    "trophyTitle": "Old Cup"
+}
+
+
+### Create a tournament as regular user, should fail with 403
+POST {{baseUrl}}/tournaments
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "title": "Unauthorized Tournament",
+    "variantId": "{{variantId}}",
+    "maxPlayers": 8,
+    "scheduledAt": "2026-10-01T12:00:00Z",
+    "trophyTitle": "Unauthorized Cup"
+}
+
+
+### Update a tournament (admin only)
+PUT {{baseUrl}}/tournaments/{{upcomingTournamentId}}
+Content-Type: application/json
+x-user-id: {{adminUserId}}
+
+{
+    "title": "Updated Summer Championship 2026",
+    "breakDuration": 15
+}
+
+
+### Try to update a finished tournament, should fail with 400
+PUT {{baseUrl}}/tournaments/{{finishedTournamentId}}
+Content-Type: application/json
+x-user-id: {{adminUserId}}
+
+{
+    "title": "Can't update this"
+}
+
+
+### Join an upcoming tournament (registered users only)
+POST {{baseUrl}}/tournaments/{{upcomingTournamentId}}/join
+x-user-id: {{regularUserId}}
+
+
+### Try to join a finished tournament, should fail with 400
+POST {{baseUrl}}/tournaments/{{finishedTournamentId}}/join
+x-user-id: {{regularUserId}}
+
+
+### Try to join a tournament as anonymous, should fail with 401
+POST {{baseUrl}}/tournaments/{{upcomingTournamentId}}/join
+
+
+#-----------------------------------------------------------------------#
+# COMMENTS
+#-----------------------------------------------------------------------#
+
+### Get comments for a game (public)
+GET {{baseUrl}}/comments?targetType=game&targetId={{finishedGameId}}
+
+
+### Get comments for a tournament (public)
+GET {{baseUrl}}/comments?targetType=tournament&targetId={{upcomingTournamentId}}
+
+
+### Get comments with pagination
+GET {{baseUrl}}/comments?targetType=game&targetId={{finishedGameId}}&page=1&limit=1
+
+
+### Get comments without targetId, should fail with 400
+GET {{baseUrl}}/comments?targetType=game
+
+
+### Create a comment on a game (registered users only)
+POST {{baseUrl}}/comments
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "targetType": "game",
+    "targetId": "{{finishedGameId}}",
+    "content": "Wow, what a great game!"
+}
+
+
+### Create a comment on a tournament (registered users only)
+POST {{baseUrl}}/comments
+Content-Type: application/json
+x-user-id: {{regularUserId}}
+
+{
+    "targetType": "tournament",
+    "targetId": "{{upcomingTournamentId}}",
+    "content": "Can't wait for this tournament!"
+}
+
+
+### Create a comment as anonymous, should fail with 401
+POST {{baseUrl}}/comments
+Content-Type: application/json
+
+{
+    "targetType": "game",
+    "targetId": "{{finishedGameId}}",
+    "content": "I am anonymous"
+}
+
+
+### Delete a comment (admin only), soft delete
+DELETE {{baseUrl}}/comments/{{commentId}}
+x-user-id: {{adminUserId}}
+
+
+### Delete a comment as regular user, should fail with 403
+DELETE {{baseUrl}}/comments/{{commentId}}
+x-user-id: {{regularUserId}}
+
+
+#-----------------------------------------------------------------------#
+# LEADERBOARD
+#-----------------------------------------------------------------------#
+
+### Get leaderboard ranked by ELO (default)
+GET {{baseUrl}}/leaderboard
+
+
+### Get leaderboard ranked by wins
+GET {{baseUrl}}/leaderboard?sort=wins
+
+
+### Get leaderboard ranked by win percentage
+GET {{baseUrl}}/leaderboard?sort=winPercentage
+
+
+### Get leaderboard ranked by total games played
+GET {{baseUrl}}/leaderboard?sort=totalGames
+
+
+### Get leaderboard filtered by game variant
+GET {{baseUrl}}/leaderboard?sort=elo&variantId={{variantId}}
+
+
+### Get leaderboard with pagination
+GET {{baseUrl}}/leaderboard?sort=elo&page=1&limit=5
+
+
+#-----------------------------------------------------------------------#
+# PLATFORM ACTIVITY
+#-----------------------------------------------------------------------#
+
+### Get platform activity (public)
+GET {{baseUrl}}/activity

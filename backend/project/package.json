@@ -1,0 +1,34 @@
+{
+  "name": "spanish-poker-dice-platform-api",
+  "version": "1.0.0",
+  "description": "API platform for a spanish poker dice game",
+  "keywords": [
+    "spanish",
+    "poker",
+    "dice"
+  ],
+  "license": "ISC",
+  "author": "Nora Storrø",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "node --watch --env-file=.env server.js",
+    "seed": "node --env-file=.env ./seed/seed.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "express-validator": "^7.3.2",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.3.1",
+    "multer": "^2.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0"
+  }
+}
