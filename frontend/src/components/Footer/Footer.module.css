@@ -1,0 +1,10 @@
+.footer{
+    background: var(--nav-bg);
+    margin: 0;
+}
+
+.links {
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: var(--font-size-base);    
+}
